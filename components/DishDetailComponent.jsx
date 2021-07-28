@@ -16,6 +16,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import firebase from 'firebase'
 import { commentsFetching } from "../redux/actions/commentsAction";
+import { dishesFetching, fetchDishes } from "../redux/actions/dishesAction";
 // import Modal from 'react-native-modal';
 function RenderComments(props) {
   const comments = props.comments;
@@ -101,8 +102,8 @@ function RenderDish({ dishes, dishId, onPress, toggleModal, setDoc }) {
               color="#f50"
               onPress={() =>
                 dish.data.favorite
-                  ? alert("Already favorite")
-                  : onPress(dish.data.docid)
+                  ?  onPress(dish.docid,'notfavorite')
+                  : onPress(dish.docid,'favorite')
               }
             />
             <Icon
@@ -123,7 +124,6 @@ function RenderDish({ dishes, dishId, onPress, toggleModal, setDoc }) {
 }
 
 export default function DishDetailComponent({ route, navigation }) {
-  const [dishes, setDishes] = useState(DISHES);
   const [comments, setComments] = useState(COMMENTS);
   const [isModalVisible, setModalVisible] = useState(false);
   const [docid, setDocid] = useState(null);
@@ -142,26 +142,28 @@ export default function DishDetailComponent({ route, navigation }) {
     leaders: state.leaders,
     promotions: state.promotions,
   }));
-  const onPress = (id) => {
-    setDishes(
-      store.dishes.dishes.map((dish) => {
-        if (dish.docid == id) {
-          return {
-            ...dish,
-            favorite: true,
-          };
-        } else {
-          dish;
-        }
+  const onPress = (id,flag) => {
+    if(flag=="favorite"){
+      firebase.firestore().collection('dishes').doc(id).update({
+        favorite:true
+      }).then(res=>{
+        dispatch(dishesFetching());
       })
-    );
+    }else if (flag=="notfavorite"){
+      firebase.firestore().collection('dishes').doc(id).update({
+        favorite:false
+      }).then(res=>{
+        dispatch(dishesFetching());
+      })
+    }
   };
+  
   return (
-    <ScrollView>
+
+    <View style={{marginBottom:10,flex:1,justifyContent:'center',alignItems:'center'}}>
 
    
-    <View style={{marginBottom:10}}>
-      {store.dishes.dishes.length ? (
+      {store.dishes.dishes.length>0 ? (
         <RenderDish
           dishes={store.dishes.dishes}
           dishId={dishId}
@@ -170,16 +172,19 @@ export default function DishDetailComponent({ route, navigation }) {
           setDoc={setDoc}
         />
       ) : (
-        <ActivityIndicator size="large" color="tomato" />
+        <ActivityIndicator size="large" color="tomato"/>
+        
       )}
-      {store.comments.comments.filter(
+      {(store.comments.comments.filter(
         (comment) => comment.data.dishId == dishId
-      ).length > 0 && (
+      ).length > 0 &&  store.dishes.dishes.length >0) &&(
+    <ScrollView style={{marginTop:5}}>
         <RenderComments
           comments={store.comments.comments.filter(
             (comment) => comment.data.dishId == dishId
           )}
         />
+        </ScrollView>
       )}
       <AddCommentModal
         isModalVisible={isModalVisible}
@@ -187,7 +192,6 @@ export default function DishDetailComponent({ route, navigation }) {
         docid={docid}
       />
     </View>
-    </ScrollView>
   );
 }
 

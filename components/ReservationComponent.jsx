@@ -5,21 +5,23 @@ import {
   ScrollView,
   StyleSheet,
   Switch,
-  Button,
   Modal,
   Platform,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { Card, Icon } from "react-native-elements";
+import { Card, Icon,Button } from "react-native-elements";
 // import DatePicker from 'react-native-datepicker'
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Input } from "react-native-elements/dist/input/Input";
 import moment from "moment";
+import firebase from "firebase";
 export default function ReservationComponent() {
   const [state, setState] = useState({
     guests: 1,
     smoking: false,
     date: moment().format("DD/MM/YYYY @ HH:mm"),
+    name:'',
+    contact:'',
   });
   const [modal, setmodal] = useState(false);
 
@@ -30,14 +32,42 @@ export default function ReservationComponent() {
     setmodal(true);
     console.log(JSON.stringify(state));
     setState({
-      guests: 1,
-      smoking: false,
+      guests: state.guests,
+      smoking: state.smoking,
       date: state.date,
+      name:state.name,
+      contact:state.contact
     });
   };
 
   return (
     <ScrollView>
+      <View style={styles.formRow}>
+        <Input
+          placeholder="Enter Your Name"
+          value={state.name}
+          leftIcon={{ type: "feather", name: "user" }}
+          onChangeText={(value) =>
+            setState({
+              ...state,
+              name: value,
+            })
+          }
+        />
+      </View>
+      <View style={styles.formRow}>
+        <Input
+          placeholder="Enter Your Contact"
+          value={state.contact}
+          leftIcon={{ type: "feather", name: "phone" }}
+          onChangeText={(value) =>
+            setState({
+              ...state,
+              contact: value,
+            })
+          }
+        />
+      </View>
       <View style={styles.formRow}>
         <Text style={styles.formLabel}>Number of Guests</Text>
         <View style={{ flex: 1 }}>
@@ -91,8 +121,7 @@ export default function ReservationComponent() {
         <Button
           onPress={() => handleReservation()}
           title="Reserve"
-          color="tomato"
-          accessibilityLabel="Learn more about this purple button"
+          containerStyle={{width:'100%',backgroundColor:'tomato'}}
         />
       </View>
       <Modal
@@ -109,12 +138,29 @@ export default function ReservationComponent() {
             Smoking?: {state.smoking ? "Yes" : "No"}
           </Text>
           <Text style={styles.modalText}>Date and Time: {state.date}</Text>
-
+          <Text style={styles.modalText}>Name: {state.name}</Text>
+          <Text style={styles.modalText}>Contact: {state.contact}</Text>
           <Button
-            onPress={toggleModal}
+            containerStyle={{ borderRadius: 7,width:'100%' }}
+            onPress={() => {
+              firebase
+                .firestore()
+                .collection("reservations")
+                .add({
+                  guests: state.guests,
+                  smoking: state.smoking,
+                  date: state.date,
+                  name:state.name,
+                  contact:state.contact
+                })
+                .then((res) => {
+                  alert("Reservation Done Successfully");
+                  toggleModal();
+                });
+            }}
             color="tomato"
-            title="Close"
-            style={{ borderRadius: 7 }}
+            title="Submit"
+            
           />
         </View>
       </Modal>
@@ -133,6 +179,7 @@ const styles = StyleSheet.create({
   formLabel: {
     fontSize: 18,
     flex: 2,
+    marginLeft:10
   },
   formItem: {
     flex: 1,
