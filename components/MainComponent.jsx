@@ -3,11 +3,16 @@ import { Text, View, Platform, StyleSheet, Image } from "react-native";
 import { Icon } from "react-native-elements";
 import { DISHES } from "../shared/dishes";
 import Menu from "../components/MenuComponent";
+import FavoriteComponent from "../components/FavoriteComponent";
 import DishDetailComponent from "./DishDetailComponent";
 import Home from "../components/HomeComponent";
-import { NavigationContainer,CommonActions } from "@react-navigation/native";
+import { NavigationContainer, CommonActions } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { createDrawerNavigator,DrawerItemList,DrawerContentScrollView} from "@react-navigation/drawer";
+import {
+  createDrawerNavigator,
+  DrawerItemList,
+  DrawerContentScrollView,
+} from "@react-navigation/drawer";
 import AboutComponent from "./AboutComponent";
 import ContactComponent from "./ContactComponent";
 import ReservationComponent from "./ReservationComponent";
@@ -38,28 +43,79 @@ function MenuStackNavigator({ navigation }) {
         component={Menu}
         options={{ title: "Menu Dishes" }}
       />
-      <Stack.Screen name="Dishdetail" component={DishDetailComponent} options={{
+      <Stack.Screen
+        name="Dishdetail"
+        component={DishDetailComponent}
+        options={{
+          headerLeft: () => (
+            <Icon
+              name="arrow-left"
+              type="feather"
+              size={35}
+              color="#ffffff"
+              iconStyle={{ marginLeft: 10 }}
+              onPress={() => {
+                navigation.dispatch(
+                  CommonActions.reset({
+                    // index: 0,
+                    routes: [{ name: "Menu" }],
+                  })
+                );
+              }}
+            />
+          ),
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+function FavoriteStackNavigator({ navigation }) {
+  return (
+    <Stack.Navigator
+      initialRouteName="Favoritedish"
+      screenOptions={{
+        headerTintColor: "white",
+        headerStyle: { backgroundColor: "tomato" },
         headerLeft: () => (
           <Icon
-            name="arrow-left"
-            type="feather"
+            name="menu"
             size={35}
             color="#ffffff"
             iconStyle={{ marginLeft: 10 }}
-            onPress={() => {
-              navigation.dispatch(
-                CommonActions.reset({
-                  // index: 0,
-                  routes: [
-                    { name: 'Menu' }
-                  ],
-                })
-              );}
-            
-            }
+            onPress={() => navigation.openDrawer()}
           />
         ),
-      }}/>
+      }}
+    >
+      <Stack.Screen
+        name="Favoritedish"
+        component={FavoriteComponent}
+        options={{ title: "Favorite Dishes" }}
+      />
+      <Stack.Screen
+        name="Dishdetail"
+        component={DishDetailComponent}
+        options={{
+          headerLeft: () => (
+            <Icon
+              name="arrow-left"
+              type="feather"
+              size={35}
+              color="#ffffff"
+              iconStyle={{ marginLeft: 10 }}
+              onPress={() => {
+                navigation.dispatch(
+                  CommonActions.reset({
+                    // index: 0,
+                    routes: [{ name: "Favoritedish" }],
+                  })
+                );
+              }}
+            />
+          ),
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -91,7 +147,6 @@ function AboutStackNavigator({ navigation }) {
     </Stack.Navigator>
   );
 }
-
 
 function ReservationStackNavigator({ navigation }) {
   return (
@@ -171,7 +226,17 @@ function MainDrawerNavigator(props) {
           ),
         }}
       />
-         <Drawer.Screen
+      <Drawer.Screen
+        name="Favorites"
+        component={FavoriteStackNavigator}
+        options={{
+          title: "Favorite Dishes",
+          drawerIcon: (config) => (
+            <Icon size={23} type="feather" name="heart"></Icon>
+          ),
+        }}
+      />
+      <Drawer.Screen
         name="Reservation"
         component={ReservationStackNavigator}
         options={{
@@ -216,7 +281,7 @@ function CustomDrawerContent(props) {
           <Text style={styles.drawerHeaderText}>Ristorante Con Fusion</Text>
         </View>
       </View>
-      <DrawerItemList {...props}/>
+      <DrawerItemList {...props} />
     </DrawerContentScrollView>
   );
 }

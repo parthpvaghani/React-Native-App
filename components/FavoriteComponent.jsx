@@ -8,7 +8,7 @@ import { DISHES } from "../shared/dishes";
 import { useSelector, useDispatch } from "react-redux";
 import { dishesFetching } from "../redux/actions/dishesAction";
 import { Button } from "react-native-elements";
-export default function MenuComponent({ navigation }) {
+export default function FavoriteComponent({ navigation }) {
   
 
   const store = useSelector((state) => ({
@@ -45,7 +45,7 @@ export default function MenuComponent({ navigation }) {
     <View style={styles.container}>
       {store.dishes.dishes.length?  (
         <FlatList
-          data={store.dishes.dishes}
+          data={store.dishes.dishes.filter(dish=>dish.data.favorite)}
           renderItem={renderMenuItem}
           keyExtractor={(item) => item.data.id.toString()}
         />
