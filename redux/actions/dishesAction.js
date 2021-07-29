@@ -18,6 +18,11 @@ export const addDishes = (dishes) => ({
     payload: dishes
 });
 
+export const deleteFavorite = (dishId) => ({
+    type: ACTIONS.DELETE_FAVORITE,
+    payload: dishId
+}); 
+
 export const setFavourite = (dishes) => ({
     type:ACTIONS.SET_DISH_FAVOURITE,
     payload:dishes

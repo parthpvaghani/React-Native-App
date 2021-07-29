@@ -20,3 +20,9 @@ export const fetchDishes = () => {
         })
     }) 
 }
+
+export const deleteFavoriteDish = (id) => {
+        firebase.firestore().collection('dishes').doc(id).update({
+            favorite:false
+        })
+}
