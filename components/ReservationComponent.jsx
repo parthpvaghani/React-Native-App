@@ -9,19 +9,22 @@ import {
   Platform,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import { Card, Icon,Button } from "react-native-elements";
+import { Card, Icon, Button } from "react-native-elements";
 // import DatePicker from 'react-native-datepicker'
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Input } from "react-native-elements/dist/input/Input";
 import moment from "moment";
 import firebase from "firebase";
+import * as Animatable from "react-native-animatable";
+
+
 export default function ReservationComponent() {
   const [state, setState] = useState({
     guests: 1,
     smoking: false,
     date: moment().format("DD/MM/YYYY @ HH:mm"),
-    name:'',
-    contact:'',
+    name: "",
+    contact: "",
   });
   const [modal, setmodal] = useState(false);
 
@@ -35,13 +38,14 @@ export default function ReservationComponent() {
       guests: state.guests,
       smoking: state.smoking,
       date: state.date,
-      name:state.name,
-      contact:state.contact
+      name: state.name,
+      contact: state.contact,
     });
   };
 
   return (
     <ScrollView>
+          <Animatable.View animation="fadeInRight" duration={500}>
       <View style={styles.formRow}>
         <Input
           placeholder="Enter Your Name"
@@ -55,6 +59,9 @@ export default function ReservationComponent() {
           }
         />
       </View>
+    </Animatable.View>
+      <Animatable.View animation="fadeInRight" duration={800}>
+     
       <View style={styles.formRow}>
         <Input
           placeholder="Enter Your Contact"
@@ -68,6 +75,9 @@ export default function ReservationComponent() {
           }
         />
       </View>
+     </Animatable.View>
+      <Animatable.View animation="fadeInRight" duration={1300}>
+     
       <View style={styles.formRow}>
         <Text style={styles.formLabel}>Number of Guests</Text>
         <View style={{ flex: 1 }}>
@@ -87,6 +97,9 @@ export default function ReservationComponent() {
           </Picker>
         </View>
       </View>
+      </Animatable.View>
+      <Animatable.View animation="fadeInRight" duration={1600}>
+    
       <View style={styles.formRow}>
         <Text style={styles.formLabel}>Smoking/Non-Smoking?</Text>
         <Switch
@@ -96,6 +109,8 @@ export default function ReservationComponent() {
           onValueChange={(value) => setState({ ...state, smoking: value })}
         ></Switch>
       </View>
+      </Animatable.View>
+      <Animatable.View animation="fadeInRight" duration={1900}>
 
       <View style={styles.formRow}>
         <Input
@@ -116,14 +131,17 @@ export default function ReservationComponent() {
           }}
         />
       </View>
+     </Animatable.View>
+      <Animatable.View animation="fadeInRight" duration={2100}>
 
       <View style={styles.formRow}>
         <Button
           onPress={() => handleReservation()}
           title="Reserve"
-          containerStyle={{width:'100%',backgroundColor:'tomato'}}
+          containerStyle={{ width: "100%", backgroundColor: "tomato" }}
         />
       </View>
+     </Animatable.View>
       <Modal
         animationType={"slide"}
         transparent={false}
@@ -141,7 +159,7 @@ export default function ReservationComponent() {
           <Text style={styles.modalText}>Name: {state.name}</Text>
           <Text style={styles.modalText}>Contact: {state.contact}</Text>
           <Button
-            containerStyle={{ borderRadius: 7,width:'100%' }}
+            containerStyle={{ borderRadius: 7, width: "100%" }}
             onPress={() => {
               firebase
                 .firestore()
@@ -150,8 +168,8 @@ export default function ReservationComponent() {
                   guests: state.guests,
                   smoking: state.smoking,
                   date: state.date,
-                  name:state.name,
-                  contact:state.contact
+                  name: state.name,
+                  contact: state.contact,
                 })
                 .then((res) => {
                   alert("Reservation Done Successfully");
@@ -160,7 +178,6 @@ export default function ReservationComponent() {
             }}
             color="tomato"
             title="Submit"
-            
           />
         </View>
       </Modal>
@@ -179,7 +196,7 @@ const styles = StyleSheet.create({
   formLabel: {
     fontSize: 18,
     flex: 2,
-    marginLeft:10
+    marginLeft: 10,
   },
   formItem: {
     flex: 1,

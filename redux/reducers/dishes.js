@@ -20,24 +20,23 @@ export const dishes = (
 
     case ActionTypes.DISHES_FAILED:
       return { ...state, isLoading: false, errMess: action.payload };
-    case ActionTypes.SET_DISH_FAVOURITE:
-      return { ...state, isLoading: false, dishes: action.payload };
+    case ActionTypes.ADD_DISH_FAVOURITE:
+      return {
+        ...state,
+        dishes: state.dishes.map((dish, index) => {
+          if (dish.docid == action.payload) {
+            return {
+              ...dish,
+              data:{
+                ...dish.data,
+                favorite:true
+              }
+            };
+          }
+          return dish;
+        }),
+      };
     case ActionTypes.DELETE_FAVORITE:
-      console.log("before");
-      console.log(state.dishes)
-      console.log("after");
-      console.log(state.dishes.map((dish, index) => {
-        if (dish.docid == action.payload) {
-          return {
-            ...dish,
-            data:{
-              ...dish.data,
-              favorite:false
-            }
-          };
-        }
-        return dish;
-      }))
       return {
         ...state,
         dishes: state.dishes.map((dish, index) => {

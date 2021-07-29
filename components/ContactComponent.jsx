@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Text, Image, ScrollView } from "react-native";
 import { Card, Divider } from "react-native-elements";
+import * as Animatable from "react-native-animatable";
+
 export default function ContactComponent() {
   return (
+    <Animatable.View animation="fadeInDown" duration={2000} delay={500}>
     <View style={{ marginBottom: 10 }}>
       <ScrollView>
         <Card>
@@ -21,5 +24,6 @@ export default function ContactComponent() {
         </Card>
       </ScrollView>
     </View>
+    </Animatable.View>
   );
 }

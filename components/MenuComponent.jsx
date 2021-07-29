@@ -8,6 +8,8 @@ import { DISHES } from "../shared/dishes";
 import { useSelector, useDispatch } from "react-redux";
 import { dishesFetching } from "../redux/actions/dishesAction";
 import { Button } from "react-native-elements";
+import * as Animatable from "react-native-animatable";
+
 export default function MenuComponent({ navigation }) {
   
 
@@ -25,6 +27,8 @@ export default function MenuComponent({ navigation }) {
 
   const renderMenuItem = ({ item, index }) => {
     return (
+      <Animatable.View animation="fadeInDown" duration={500}>
+
       <ListItem
         key={index}
         bottomDivider
@@ -39,6 +43,7 @@ export default function MenuComponent({ navigation }) {
         />
         <ListItem.Title>{item.data.name}</ListItem.Title>
       </ListItem>
+      </Animatable.View>
     );
   };
   return (

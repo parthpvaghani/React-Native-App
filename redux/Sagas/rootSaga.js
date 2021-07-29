@@ -9,7 +9,8 @@ function* rootSaga() {
 	yield takeLatest([
 		ACTION.DISHES_FAILED,
 		ACTION.FETCH_DISHES,
-		ACTION.DELETE_FAVORITE
+		ACTION.DELETE_FAVORITE,
+		ACTION.ADD_DISH_FAVOURITE
 	], dishesSaga);
 	yield takeLatest([
 		ACTION.FETCH_COMMENTS,

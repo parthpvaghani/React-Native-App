@@ -26,3 +26,10 @@ export const deleteFavoriteDish = (id) => {
             favorite:false
         })
 }
+
+
+export const addFavoriteDish = (id) => {
+    firebase.firestore().collection('dishes').doc(id).update({
+        favorite:true
+    })
+}
