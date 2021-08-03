@@ -46,7 +46,7 @@ export default function AboutComponent() {
         </Card>
         </View>
         </Animatable.View>
-      <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+      <Animatable.View animation="fadeInUp" duration={2000} delay={1000}>
 <View>
         <Card style={{ marginBottom: 15 }}>
           <Card.Title>Corporate Leadership</Card.Title>

@@ -10,6 +10,7 @@ import {
   Modal,
   Alert,
   PanResponder,
+  Share,
 } from "react-native";
 import { Card, ListItem, Button, Icon } from "react-native-elements";
 import { DISHES } from "../shared/dishes";
@@ -19,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import firebase from "firebase";
 import { commentsFetching } from "../redux/actions/commentsAction";
 import * as Animatable from "react-native-animatable";
+import moment from "moment";
 import {
   dishesFetching,
   fetchDishes,
@@ -28,7 +30,9 @@ import {
 // import Modal from 'react-native-modal';
 function RenderComments(props) {
   const comments = props.comments;
-  console.log("commets array", comments);
+
+  // console.log("commets array", comments);
+
   const renderCommentItem = ({ item, index }) => {
     return (
       <SafeAreaView>
@@ -46,8 +50,11 @@ function RenderComments(props) {
             >
               <View>
                 <Text style={{ fontSize: 14 }}>{item.data.comment}</Text>
-                <Text style={{ fontSize: 12 }}>
-                  {"-- " + item.data.author + ", " + item.data.date}{" "}
+                <Text style={{ fontSize: 12, minWidth: 150 }}>
+                  {"-- " + item.data.author + ", "}
+                </Text>
+                <Text style={{ fontSize: 12, minWidth: 150 }}>
+                  {moment(item.data.date).format("llll")}
                 </Text>
               </View>
               <AirbnbRating
@@ -55,7 +62,7 @@ function RenderComments(props) {
                 isDisabled
                 reviews={["Terrible", "Bad", "Average", "OK", "Good"]}
                 defaultRating={item.data.rating}
-                size={10}
+                size={8}
               />
             </View>
           </ListItem>
@@ -87,6 +94,19 @@ function RenderDish({ dishes, dishId, onPress, toggleModal, setDoc }) {
     else return false;
   };
 
+  const shareDish = (title, message, url) => {
+    Share.share(
+      {
+        title: title,
+        message: title + ": " + message + " " + url,
+        url: url,
+      },
+      {
+        dialogTitle: "Share " + title,
+      }
+    );
+  };
+
   const recognizeComment = ({ moveX, moveY, dx, dy }) => {
     if (dx > 200) return true;
     else return false;
@@ -109,7 +129,7 @@ function RenderDish({ dishes, dishId, onPress, toggleModal, setDoc }) {
     },
 
     onPanResponderEnd: (e, gestureState) => {
-      console.log("pan responder end", gestureState.dx);
+      // console.log("pan responder end", gestureState.dx);
       if (recognizeDrag(gestureState))
         Alert.alert(
           "Add Favorite",
@@ -138,6 +158,7 @@ function RenderDish({ dishes, dishId, onPress, toggleModal, setDoc }) {
       return true;
     },
   });
+
   return (
     <Animatable.View
       animation="fadeInDown"
@@ -187,6 +208,16 @@ function RenderDish({ dishes, dishId, onPress, toggleModal, setDoc }) {
                 color="grey"
                 onPress={() => setDoc(dishId)}
               />
+              <Icon
+                raised
+                reverse
+                name="share"
+                type="font-awesome"
+                color="#51D2A8"
+                onPress={() =>
+                  shareDish(dish.data.name, dish.data.description, dish.data.image)
+                }
+              />
             </View>
           </Card>
         ) : (
@@ -224,6 +255,7 @@ export default function DishDetailComponent({ route, navigation }) {
     }
   };
 
+
   return (
     <View
       style={{
@@ -233,29 +265,30 @@ export default function DishDetailComponent({ route, navigation }) {
         alignItems: "center",
       }}
     >
-      {store.dishes.dishes.length > 0 ? (
-        <RenderDish
-          dishes={store.dishes.dishes}
-          dishId={dishId}
-          onPress={onPress}
-          toggleModal={toggleModal}
-          setDoc={setDoc}
-        />
-      ) : (
-        <ActivityIndicator size="large" color="tomato" />
-      )}
-      {store.comments.comments.filter(
-        (comment) => comment.data.dishId == dishId
-      ).length > 0 &&
-        store.dishes.dishes.length > 0 && (
-          <ScrollView style={{ marginTop: 5 }}>
+      <ScrollView style={{ marginTop: 5 }}>
+        {store.dishes.dishes.length > 0 ? (
+          <RenderDish
+            dishes={store.dishes.dishes}
+            dishId={dishId}
+            onPress={onPress}
+            toggleModal={toggleModal}
+            setDoc={setDoc}
+          />
+        ) : (
+          <ActivityIndicator size="large" color="tomato" />
+        )}
+        {store.comments.comments.filter(
+          (comment) => comment.data.dishId == dishId
+        ).length > 0 &&
+          store.dishes.dishes.length > 0 && (
             <RenderComments
               comments={store.comments.comments.filter(
                 (comment) => comment.data.dishId == dishId
               )}
             />
-          </ScrollView>
-        )}
+          )}
+      </ScrollView>
+
       <AddCommentModal
         isModalVisible={isModalVisible}
         toggleModal={toggleModal}
