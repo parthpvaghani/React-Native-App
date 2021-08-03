@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from "react";
+import React, { Component, useEffect,useContext } from "react";
 import {
   Text,
   View,
@@ -18,6 +18,9 @@ import { leadersFetching } from "../redux/actions/leadersAction";
 import { commentsFetching } from "../redux/actions/commentsAction";
 import { Chip } from "react-native-elements/dist/buttons/Chip";
 import * as Animatable from "react-native-animatable";
+import { Avatar } from "react-native-elements/dist/avatar/Avatar";
+import { AuthContext } from "../Auth/Auth";
+import { useState } from "react";
 
 function RenderItem({ featured }) {
   return (
@@ -40,6 +43,9 @@ function RenderItem({ featured }) {
 }
 
 export default function HomeComponent() {
+  const { currentUser,changeStatusOfCurrentUser,userData } = useContext(AuthContext);
+
+  const [profilePic,setProfile]=useState({});
   const dispatch = useDispatch();
   const store = useSelector((state) => ({
     dishes: state.dishes,
@@ -54,8 +60,9 @@ export default function HomeComponent() {
     dispatch(leadersFetching());
     dispatch(commentsFetching());
 
-    console.log(store);
-  }, []);
+    setProfile(userData.url)
+    // console.log(store);
+  }, [userData]);
   return (
     <View
       style={{
@@ -70,6 +77,26 @@ export default function HomeComponent() {
       !store.leaders.isLoading &&
       !store.promotions.isLoading ? (
         <ScrollView>
+           <Animatable.View animation="fadeInRight" duration={1000}>
+             <Text style={{textAlign:'center',marginTop:5,color:'tomato'}}>Welcome</Text>
+             {
+               profilePic &&
+
+           <Avatar
+                source={{
+                  uri: userData?.url,
+                }}
+                rounded
+                containerStyle={{
+                  width: 100,
+                  height: 100,
+                  alignSelf: "center",
+                  marginTop: 5,
+                }}
+              >
+              </Avatar>
+             }
+          </Animatable.View>
           <Animatable.View animation="fadeInRight" duration={1000}>
             <Chip
               containerStyle={{
